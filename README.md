@@ -2,6 +2,10 @@
 
 Welcome to Prop Hunt MW2! This custom gamemode is for Xbox 360. As of right now, you have two methods for installation: Infinity Loader and Brav's Tool.
 
+Any issues feel free to report them here or reach out to me:
+* Discord: @itztrxgic
+* X: @itzTrxgic
+
 Infinity Loader Installation:
 * Download and extract whichever version youd like to play
 * Take the folder (either Menu version or no menu) and move them to Documents > InfinityLoader > Projects > MW2 > [Project Folder Here]
@@ -17,3 +21,6 @@ Brav's Tool
 * Reboot your console and launch MW2
 * Start a private match and set the gamemode to Search and Destroy
 * Pick your map (any map except Rust and Wasteland) and start the game!
+
+
+<img width="1127" height="634" alt="Screenshot 2026-01-01 232747" src="https://github.com/user-attachments/assets/e9c46f88-681d-40c0-84f4-3ac0cb375075" />
