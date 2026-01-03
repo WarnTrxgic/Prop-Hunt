@@ -23,4 +23,3 @@ Brav's Tool
 * Pick your map (any map except Rust and Wasteland) and start the game!
 
 
-<img width="1127" height="634" alt="Screenshot 2026-01-01 232747" src="https://github.com/user-attachments/assets/e9c46f88-681d-40c0-84f4-3ac0cb375075" />
