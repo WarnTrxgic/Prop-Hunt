@@ -30,7 +30,7 @@ init()
     setDvar("teamProps", self.team);
     setDvar("scr_game_graceperiod", .5);
     setDvar("scr_sd_winlimit", 4); //change if you want more rounds
-    setDvar("scr_sd_timelimit", 4); //change if you want longer rounds
+    setDvar("scr_sd_timelimit", 6); //change if you want longer rounds
     setDvar("scr_sd_roundswitch", 1);
     setDvar("g_hardcore", 1);
     setDvar("didyouknow", "^2Prop ^1Hunt");
@@ -318,4 +318,5 @@ getTimeLimit()
 {
     gametype = toLower( getDvar( "g_gametype" ) );
     return getDvarFloat( "scr_" + gametype + "_timelimit" );
+
 }
