@@ -30,6 +30,8 @@ init()
     setDvar("scr_sd_winlimit", 4); //change if you want more rounds
     setDvar("scr_sd_timelimit", 6); //change if you want longer rounds
     setDvar("scr_sd_roundswitch", 1);
+	setDvar("ui_allow_classchange", 0);
+    setDvar("ui_allow_teamchange", 0);
     setDvar("g_hardcore", 1);
     setDvar("didyouknow", "^2Prop ^1Hunt");
     precacheshader("gradient_center");
@@ -318,4 +320,5 @@ getTimeLimit()
     return getDvarFloat( "scr_" + gametype + "_timelimit" );
 
 }
+
 
