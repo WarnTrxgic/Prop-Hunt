@@ -23,9 +23,7 @@ init()
     level.strings = [];
     level.currentGametype      = getDvar("g_gametype");
     level.currentMapName       = getDvar("mapName");
-    level.callDamage           = level.callbackPlayerDamage;
     level.callbackPlayerDamage = ::modifyPlayerDamage;
-    level.callKilled           = level.callbackPlayerKilled;
     level.callbackPlayerKilled = ::modifyPlayerKilled;
     setDvar("teamProps", self.team);
     setDvar("scr_game_graceperiod", .5);
@@ -320,3 +318,4 @@ getTimeLimit()
     return getDvarFloat( "scr_" + gametype + "_timelimit" );
 
 }
+
