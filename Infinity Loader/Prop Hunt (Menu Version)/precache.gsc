@@ -1,8 +1,9 @@
-mw2Precache()
+modelPrecache()
 {
     level.propIDs = [];
     level.propNames = [];
 
+#ifdef MW2
     if(level.currentMapName == "mp_afghan")
 {
     level.propIDs = [
@@ -186,7 +187,7 @@ else if(level.currentMapName == "mp_highrise")
         "Photocopier",
         "Oxygen Tank - Orange",
         "Oxygen Tank - Green",
-        "Large Electrical Transformer",
+        "Electrical Transformer",
         "Roof Ventilator",
         "Large Propane Tank",
         "Large green fence",
@@ -217,7 +218,7 @@ else if(level.currentMapName == "mp_estate")
         "Small white car",
         "Big black car",
         "Small black car",
-        "Large electrical transformer",
+        "Electrical Transformer",
         "Oxygen Tank - Orange",
         "File cabinet",
         "Flatscreen TV",
@@ -868,6 +869,10 @@ else if(level.currentMapName == "mp_strike")
         "Hummer"
     ];
 }
+#endif
+#ifdef MW3
+//nothing to see here...yet ;)
+#endif
 
 for(a=0;a<level.propIDs.size;a++) 
     precachemodel(level.propIDs[a]);

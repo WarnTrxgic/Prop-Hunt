@@ -33,10 +33,10 @@ linkPropToPlayer()
     self endon("disconnect");
     self endon("death");
 
-    while (isDefined(self.propModel))
+    while(isDefined(self.propModel))
     {
         self.propModel.origin = self.origin;
-        wait 0.05;
+        wait 0.001;
     }
 }
 
@@ -47,7 +47,7 @@ propBindInst()
     
     bindInst = self createFontString("objective", 1.2);
     bindInst.x = 5;
-    bindInst.y = 15;
+    bindInst.y = 110;
     bindInst.alpha = 1;
     bindInst.hidewheninmenu = 1;
     bindInst.hidewheninkillcam = 1;
@@ -138,8 +138,6 @@ freezeBind()
     {
         self waittill("freezeProp");
 
-        if (!isDefined(self.frozen)) self.frozen = 0;
-
         if (!self.frozen && !self.menu["vars"]["open"])
         {
             self.frozen = 1;
@@ -184,11 +182,11 @@ spawnDecoyBind()
         if (!isDefined(self.propModelName))
             continue;
 
-        if (self.allowedDecoys > 0 && !self.menu["vars"]["open"])
+        if (self.allowedDecoys > 0 && !self.menu["vars"]["open"] && isAlive(self))
         {
             decoy = spawn("script_model", self.origin);
             decoy setModel(self.propModelName);
-            decoy.angles = self.angles;
+            decoy.angles = self.propModel.angles;
             decoy Solid();
 
             decoy thread monitorDecoyDamage(self);
@@ -240,9 +238,9 @@ stunBind(allowedStuns)
     {
         self waittill("dropStun");
 
-        if(self.allowedStuns != 0 && !self.menu["vars"]["open"])
+        if(self.allowedStuns != 0 && !self.menu["vars"]["open"] && isAlive(self))
         {
-            nearestDist = 500;
+            nearestDist = 400;
             
             foreach(player in level.players)
             {
@@ -258,7 +256,7 @@ stunBind(allowedStuns)
                 }
 
                 if(nearestPlayer.team != getDvar("teamProps"))
-                    nearestPlayer thread maps\mp\_flashgrenades::applyflash(4, 0);
+                    nearestPlayer thread maps\mp\_flashgrenades::applyflash(3.5, 0);
             }
             
             self.allowedStuns--;

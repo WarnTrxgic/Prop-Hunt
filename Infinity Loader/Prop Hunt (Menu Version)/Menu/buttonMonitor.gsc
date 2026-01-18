@@ -1,6 +1,7 @@
 buttons()
 {
     self endon("death");
+    
     while(1)
     {
         if(!self.menu["vars"]["open"] && self isButtonPressed("+actionslot 2") && self adsButtonPressed())

@@ -23,22 +23,30 @@ init()
     level.strings = [];
     level.currentGametype      = getDvar("g_gametype");
     level.currentMapName       = getDvar("mapName");
+
+    if(level.currentGametype != "sd")
+        return;
+
+    level.callDamage           = level.callbackPlayerDamage;
     level.callbackPlayerDamage = ::modifyPlayerDamage;
+    level.callKilled           = level.callbackPlayerKilled;
     level.callbackPlayerKilled = ::modifyPlayerKilled;
     setDvar("teamProps", self.team);
+    setDvar("teamHunters", self.team);
     setDvar("scr_game_graceperiod", .5);
-    setDvar("scr_sd_winlimit", 4); //change if you want more rounds
-    setDvar("scr_sd_timelimit", 6); //change if you want longer rounds
-    setDvar("scr_sd_roundswitch", 1);
-	setDvar("ui_allow_classchange", 0);
+    setDvar("scr_sd_winlimit", 4); //change if you want more rounds (sets round win limit)
+    setDvar("scr_sd_timelimit", 6); //change if you want longer rounds (sets round time limit)
+    setDvar("scr_sd_roundswitch", 1); //change if you want more rounds as props (makes teams switch after every round)
+    setDvar("ui_allow_classchange", 0);
     setDvar("ui_allow_teamchange", 0);
     setDvar("g_hardcore", 1);
     setDvar("didyouknow", "^2Prop ^1Hunt");
     precacheshader("gradient_center");
-    mw2Precache();
+    modelPrecache();
     level thread TimerStart();
     level thread forceAutoAssign();
     level thread customGameTimer();
+    level thread disablePlayerCollisions();
     level thread onPlayerConnect();
 }
 
@@ -52,47 +60,9 @@ onPlayerConnect()
         player thread doTeamCheck();
         player thread isMapSupported();
         player thread doTeamNames();
+        player thread getPropsAliveCount();
         player thread MonitorButtons();
         player thread onPlayerSpawned();
-    }
-}
-
-doTeamCheck()
-{
-    self endon("disconnect");
-
-	for(;;)
-	{
-        self definesMenu();
-        self optSizes();
-
-		self waittill("spawned_player");
-
-        self thread isMapSupported();
-
-        if(level.supportedMap)
-        {
-            if(self.pers["team"] == game["defenders"])
-            {
-                setDvar("teamProps", self.team);
-                self thread initmenu();
-                self thread teamSetup("props");
-            }
-            else if(self.pers["team"] == game["attackers"])
-                self thread teamSetup("hunters");
-        }
-    }
-}
-
-onPlayerSpawned()
-{
-    self endon("disconnect");
-    level endon("game_ended");
-
-    for(;;)
-    {
-        self waittill("spawned_player");
-        self disableusability();
     }
 }
 
@@ -119,6 +89,48 @@ autoAssign()
     self notify("menuresponse", game["menu_team"], "autoassign");
     wait 0.5;
     self notify("menuresponse", game["menu_changeclass"], "class1");
+}
+
+doTeamCheck()
+{
+    self endon("disconnect");
+
+	for(;;)
+	{
+        self definesMenu();
+        self optSizes();
+
+		self waittill("spawned_player");
+
+        self thread isMapSupported();
+
+        if(level.supportedMap)
+        {
+            if(self.pers["team"] == game["defenders"])
+            {
+                setDvar("teamProps", self.team);
+                self thread initmenu();
+                self thread teamSetup("props");
+            }
+            else if(self.pers["team"] == game["attackers"])
+            {
+                self thread teamSetup("hunters");
+                setDvar("teamHunters", self.team);
+            }
+        }
+    }
+}
+
+onPlayerSpawned()
+{
+    self endon("disconnect");
+    level endon("game_ended");
+
+    for(;;)
+    {
+        self waittill("spawned_player");
+        self disableusability();
+    }
 }
 
 doTeamNames()
@@ -178,6 +190,7 @@ teamSetup(team)
 {
     if(team == "props")
     {
+        self takeAllWeapons();
         self freezecontrols(false);
         self setClientDvar("cg_thirdperson", 1);
 	    self setClientDvar("cg_thirdPersonRange", 160);
@@ -196,23 +209,26 @@ teamSetup(team)
         wait 1;
         self thread maps\mp\gametypes\_hud_message::hintMessage("You're a ^2Prop^7!");      
         self clearPerks();
-	    self takeAllWeapons();
 	    self setperk("specialty_quieter");
 	    self setperk("specialty_coldblooded");
+        self setperk("specialty_lightweight");
         self SetClientDvar( "scr_player_maxhealth", 100);
+        level waittill("huntersReleased");
+        self takeAllWeapons();
     }
     else if(team == "hunters")
     {
         self VisionSetNakedForPlayer("blacktest", 0.5);
         self freezeControls(true);
+        self thread lastPropPing();
         self thread maps\mp\gametypes\_hud_message::hintMessage("Welcome to ^2Prop ^1Hunt^7!");
         wait 1;
         self thread maps\mp\gametypes\_hud_message::hintMessage("You're a ^1Hunter^7!");
         self clearPerks();
-	    self takeAllWeapons();
-        self doHunterLoadout();
         level waittill("huntersReleased");
         self VisionSetNakedForPlayer(level.currentMapName, 2);
+        self takeAllWeapons();
+        self doHunterLoadout();
         self freezeControls(false);
     }
 }
@@ -221,7 +237,7 @@ modifyPlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeap
 {        
     if(sMeansOfDeath == "MOD_FALLING")
         iDamage = 0;
-            
+
     thread maps\mp\gametypes\_damage::Callback_PlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, psOffsetTime);
 }
 
@@ -281,6 +297,7 @@ customGameTimer()
     level waittill("prematch_over");
     waittillframeend;
     
+    level.customTimer.hidewheninkillcam = 1;
     level.customTimer = createServerTimer("hudbig", 1);
     level.customTimer setPoint("CENTER", "CENTER", 0, -215);
 
@@ -316,9 +333,13 @@ getTimeRemaining()
 
 getTimeLimit()
 {
-    gametype = toLower( getDvar( "g_gametype" ) );
-    return getDvarFloat( "scr_" + gametype + "_timelimit" );
-
+    return getDvarFloat( "scr_" + level.currentGametype + "_timelimit" );
 }
 
-
+disablePlayerCollisions()
+{
+    #ifdef MW2
+        WriteInt(0x821D29A0, 0x60000000); //Push back when passing through another player(ClientEndFrame -> call to StuckInClient)
+        WriteInt(0x8225FB04, 0x60000000); //Player collision with other players(SV_ClipMoveToEntity -> call to CM_TransformedCapsuleTrace)
+    #endif
+}

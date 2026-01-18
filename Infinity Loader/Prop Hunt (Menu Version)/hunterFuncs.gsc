@@ -16,3 +16,39 @@ doHunterLoadout()
     wait .1;
     self switchtoweapon(pickedPrimary);
 }
+
+lastPropPing()
+{
+    hunters = getDvar("teamHunters");
+    initialTime = int( (getTimeRemaining() / 1000.0) - 1 );
+
+    level waittill("prematch_over");
+
+    if(!spawnWaitOver)
+    {
+        wait 5;
+        spawnWaitOver = 1;
+    }
+
+    if(self.team == hunters)
+    {
+        if(getPropsAliveCount() == 1 || initialTime == 30 || !self.hunterUAVDone)
+        {
+            self thread maps\mp\killstreaks\_uav::launchUav(self, hunters, 5, false);
+            self.hunterUAVDone = 1;
+        }
+    }
+}
+
+getPropsAliveCount()
+{
+    propCount = 0;
+    
+    foreach(player in level.players)
+    {
+        if(player.team == getDvar("teamProps") && isAlive(player))
+            propCount++;
+    }
+    
+    return propCount;
+}
