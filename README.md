@@ -1,13 +1,13 @@
 # Prop-Hunt
 
-Welcome to Prop Hunt MW2! This custom gamemode is for Xbox 360. As of right now, you have two methods for installation: Infinity Loader and Brav's Tool.
+Welcome to Prop Hunt! This custom gamemode is for Xbox 360. As of right now, you have two methods for installation: Infinity Loader and Brav's Tool.
 
 Any issues feel free to report them here or reach out to me:
-* Discord: @itztrxgic
-* X: @itzTrxgic
+* Discord: @akatrxgic
+* X: @akaTrxgic
 
 Infinity Loader Installation:
-* Download and extract whichever version youd like to play
+* Download and extract whichever version you'd like to play
 * Take the folder (either Menu version or no menu) and move them to Documents > InfinityLoader > Projects > MW2 > [Project Folder Here]
 * Open IL and go to the compiler
 * Click open project, select MW2, and double click the project name in the list
