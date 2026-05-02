@@ -43,7 +43,7 @@
         precacheshader("gradient_center");
         modelPrecache();
         level thread TimerStart();
-        //level thread forceAutoAssign();
+        level thread forceAutoAssign();
         level thread customGameTimer();
         level thread disablePlayerCollisions();
         level thread onPlayerConnect();
